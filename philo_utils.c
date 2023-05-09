@@ -6,7 +6,7 @@
 /*   By: mzoheir <mzoheir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/02 23:17:41 by mzoheir           #+#    #+#             */
-/*   Updated: 2023/04/03 02:57:15 by mzoheir          ###   ########.fr       */
+/*   Updated: 2023/05/03 20:21:08 by mzoheir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,26 @@ int	error_args(char **av)
 	while (j < i)
 	{
 		if (f_atoi(av[j]) <= 0)
-			return (0);
+			return (1);
 		j++;
 	}
-	return (1);
+	return (0);
+}
+
+int	error_args_bis(char **av)
+{
+	int	j;
+	int	i;
+
+	j = 0;
+	i = f_strlen_double(av);
+	while (++j < i)
+	{
+		if (!(f_atoi(av[j]) >= 0))
+			return (1);
+		j++;
+	}
+	return (0);
 }
 
 unsigned long	get_time(void)
@@ -51,41 +67,17 @@ void	ft_usleep(unsigned long time)
 	}
 }
 
-int	f_atoi(char *str)
+void	subroutine(t_philo *philos, t_mutex *mutex)
 {
-	unsigned char	*s;
-	int				i;
-	int				res;
-	int				sign;
-
-	s = (unsigned char *)str;
-	res = 0;
-	i = 0;
-	sign = 1;
-	while ((s[i] >= 9 && s[i] <= 13) || s[i] == 32)
-		i++;
-	if (s[i] == '-')
-	{
-		sign *= -1;
-		i++;
-	}
-	else if (s[i] == '+')
-		i++;
-	while (s[i] >= 48 && s[i] <= 57)
-	{
-		res = res * 10 + (s[i] - 48);
-		i++;
-	}
-	return (res * sign);
-}
-
-void	subroutine(t_philo *philos)
-{
-	print(philos, "is thinking");
+	print(philos, "is thinking", mutex);
 	pthread_mutex_lock(&philos->lock->mut[philos->philo_id]);
-	print(philos, "has taken a fork");
-	pthread_mutex_lock(&philos->lock->mut[(philos->philo_id
-			% philos->nb_philos) + 1]);
-	print(philos, "has taken a fork");
-	print(philos, "is eating");
+	print(philos, "has taken a fork", mutex);
+	pthread_mutex_lock(&philos->lock->mut[(philos->philo_id % philos->nb_philos)
+		+ 1]);
+	print(philos, "has taken a fork", mutex);
+	print(philos, "is eating", mutex);
+	pthread_mutex_lock(&philos->lock->last_meal);
+	philos->last_meal = get_time();
+	pthread_mutex_unlock(&philos->lock->last_meal);
+	ft_usleep(philos->time_to_eat);
 }
