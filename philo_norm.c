@@ -6,7 +6,7 @@
 /*   By: mzoheir <mzoheir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/09 22:48:40 by mzoheir           #+#    #+#             */
-/*   Updated: 2023/05/09 14:14:01 by mzoheir          ###   ########.fr       */
+/*   Updated: 2023/05/09 14:59:37 by mzoheir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,11 +72,11 @@ int	f_atoi(char *str)
 	return (res * sign);
 }
 
-void	bis_main(int i, t_philo *philos, t_mutex *mutex)
+void	bis_main(t_norm *norm, t_philo *philos, t_mutex *mutex)
 {
 	pthread_mutex_lock(&mutex->start);
-	printf("%ld %d died \n", (get_time() - philos[i].start),
-		philos[i].philo_id);
+	printf("%ld %d died \n", (get_time() - philos[norm->i].start),
+		philos[norm->i].philo_id);
 	pthread_mutex_unlock(&mutex->start);
 	pthread_mutex_lock(&mutex->death);
 	mutex->dead = 1;

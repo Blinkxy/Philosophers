@@ -6,7 +6,7 @@
 /*   By: mzoheir <mzoheir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/02 23:17:02 by mzoheir           #+#    #+#             */
-/*   Updated: 2023/05/09 14:26:39 by mzoheir          ###   ########.fr       */
+/*   Updated: 2023/05/09 19:10:55 by mzoheir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,12 +40,12 @@ void	*routine(void *arg)
 		}
 		pthread_mutex_unlock(&philos->lock->death);
 		subroutine(philos, philos->lock);
-		pthread_mutex_lock(&philos->lock->eat);
-		philos->eat++;
-		pthread_mutex_unlock(&philos->lock->eat);
 		pthread_mutex_unlock(&philos->lock->mut[(philos->philo_id
 				% philos->nb_philos) + 1]);
 		pthread_mutex_unlock(&philos->lock->mut[philos->philo_id]);
+		pthread_mutex_lock(&philos->lock->eat);
+		philos->eat++;
+		pthread_mutex_unlock(&philos->lock->eat);
 		if (philos->eat == philos->times_to_eat)
 			return (0);
 		print(philos, "is sleeping", philos->lock);
@@ -76,7 +76,7 @@ void	make_threads(t_philo *philos, t_mutex *mutex, pthread_t *th, char **av)
 		philos[i].time_to_sleep = f_atoi(av[4]);
 		philos[i].start = start_sim;
 		philos[i].lock = mutex;
-		philos[i].last_meal = get_time();
+		philos[i].last_meal = start_sim;
 		pthread_create(&th[i], NULL, &routine, &philos[i]);
 		usleep(50);
 	}
@@ -91,21 +91,14 @@ void	death_check(t_philo *philos, t_mutex *mutex, char **av)
 	{
 		if (norm.counter == f_atoi(av[1]))
 			break ;
-		pthread_mutex_lock(&mutex->start);
-		if (get_time() - philos[norm.i].start >= (unsigned long)f_atoi(av[2]))
-		{
-			pthread_mutex_unlock(&mutex->start);
-			bis_main(norm.i, philos, mutex);
-			break ;
-		}
-		norm_bs_2(mutex);
+		pthread_mutex_lock(&mutex->last_meal);
 		if (get_time()
-			- philos[norm.i].last_meal >= (unsigned long)f_atoi(av[2]))
+			- philos[norm.i].last_meal >= philos[norm.i].time_to_die)
 		{
 			pthread_mutex_unlock(&mutex->last_meal);
-			bis_main(norm.i, philos, mutex);
+			bis_main(&norm, philos, mutex);
 			break ;
-		}
+		}	
 		bis_death_check_2(philos, mutex, av, &norm);
 	}
 }

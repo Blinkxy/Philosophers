@@ -6,7 +6,7 @@
 /*   By: mzoheir <mzoheir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 16:52:34 by mzoheir           #+#    #+#             */
-/*   Updated: 2023/05/09 14:28:26 by mzoheir          ###   ########.fr       */
+/*   Updated: 2023/05/09 19:03:59 by mzoheir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,4 @@ void	norm_bs(t_norm *norm)
 {
 	norm->i = 1;
 	norm->counter = 0;
-}
-
-void	norm_bs_2(t_mutex *mutex)
-{
-	pthread_mutex_unlock(&mutex->start);
-	pthread_mutex_lock(&mutex->last_meal);
 }

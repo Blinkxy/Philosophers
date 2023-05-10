@@ -6,7 +6,7 @@
 /*   By: mzoheir <mzoheir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/18 23:25:49 by mzoheir           #+#    #+#             */
-/*   Updated: 2023/05/09 14:26:10 by mzoheir          ###   ########.fr       */
+/*   Updated: 2023/05/09 19:09:03 by mzoheir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ typedef struct philo
 	int				time_to_sleep;
 	int				time_to_eat;
 	int				eat;
-	int				time_to_die;
+	unsigned long	time_to_die;
 	t_mutex			*lock;
 	int				nb_philos;
 	int				times_to_eat;
@@ -65,8 +65,7 @@ void				subroutine(t_philo *philos, t_mutex *mutex);
 void				print(t_philo *philos, char *s, t_mutex *mutex);
 void				mutex_init(t_mutex *mutex, char **av);
 int					f_strlen_double(char **str);
-void				bis_main(int i, t_philo *philos, t_mutex *mutex);
+void				bis_main(t_norm *norm, t_philo *philos, t_mutex *mutex);
 void				norm_main(int *tab, t_mutex *mutex, pthread_t	*th);
 void				norm_bs(t_norm *norm);
-void				norm_bs_2(t_mutex *mutex);
 #endif

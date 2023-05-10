@@ -6,7 +6,7 @@
 /*   By: mzoheir <mzoheir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/02 23:17:41 by mzoheir           #+#    #+#             */
-/*   Updated: 2023/05/03 20:21:08 by mzoheir          ###   ########.fr       */
+/*   Updated: 2023/05/09 19:01:22 by mzoheir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,10 +70,10 @@ void	ft_usleep(unsigned long time)
 void	subroutine(t_philo *philos, t_mutex *mutex)
 {
 	print(philos, "is thinking", mutex);
-	pthread_mutex_lock(&philos->lock->mut[philos->philo_id]);
-	print(philos, "has taken a fork", mutex);
 	pthread_mutex_lock(&philos->lock->mut[(philos->philo_id % philos->nb_philos)
 		+ 1]);
+	pthread_mutex_lock(&philos->lock->mut[philos->philo_id]);
+	print(philos, "has taken a fork", mutex);
 	print(philos, "has taken a fork", mutex);
 	print(philos, "is eating", mutex);
 	pthread_mutex_lock(&philos->lock->last_meal);
