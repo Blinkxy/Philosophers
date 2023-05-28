@@ -6,7 +6,7 @@
 /*   By: mzoheir <mzoheir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/02 23:17:02 by mzoheir           #+#    #+#             */
-/*   Updated: 2023/05/09 19:10:55 by mzoheir          ###   ########.fr       */
+/*   Updated: 2023/05/28 17:00:21 by mzoheir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@ void	print(t_philo *philos, char *s, t_mutex *mutex)
 	{
 		pthread_mutex_unlock(&mutex->death);
 		pthread_mutex_lock(&mutex->print_lock);
-		printf("%ld  %d %s\n", get_time() - philos->start, philos->philo_id, s);
+		printf("%ld  %d %s\n", get_time() - philos->start, philos->philo_id + 1,
+			s);
 		pthread_mutex_unlock(&mutex->print_lock);
 	}
 	pthread_mutex_unlock(&mutex->death);
@@ -40,8 +41,8 @@ void	*routine(void *arg)
 		}
 		pthread_mutex_unlock(&philos->lock->death);
 		subroutine(philos, philos->lock);
-		pthread_mutex_unlock(&philos->lock->mut[(philos->philo_id
-				% philos->nb_philos) + 1]);
+		pthread_mutex_unlock(&philos->lock->mut[(philos->philo_id + 1)
+			% (philos->nb_philos)]);
 		pthread_mutex_unlock(&philos->lock->mut[philos->philo_id]);
 		pthread_mutex_lock(&philos->lock->eat);
 		philos->eat++;
@@ -61,8 +62,8 @@ void	make_threads(t_philo *philos, t_mutex *mutex, pthread_t *th, char **av)
 
 	start_sim = get_time();
 	mutex->dead = 0;
-	i = 0;
-	while (++i <= f_atoi(av[1]))
+	i = -1;
+	while (++i < f_atoi(av[1]))
 	{
 		philos[i].philo_id = i;
 		philos[i].nb_philos = f_atoi(av[1]);
@@ -92,16 +93,55 @@ void	death_check(t_philo *philos, t_mutex *mutex, char **av)
 		if (norm.counter == f_atoi(av[1]))
 			break ;
 		pthread_mutex_lock(&mutex->last_meal);
-		if (get_time()
-			- philos[norm.i].last_meal >= philos[norm.i].time_to_die)
+		if (get_time() - philos[norm.i].last_meal >= philos[norm.i].time_to_die)
 		{
 			pthread_mutex_unlock(&mutex->last_meal);
 			bis_main(&norm, philos, mutex);
 			break ;
-		}	
+		}
 		bis_death_check_2(philos, mutex, av, &norm);
 	}
 }
+
+// void	death_check(t_philo *philos, t_mutex *mutex, char **av)
+// {
+// 	int i = 0;
+// 	int counter = 0;
+
+// 	while (1)
+// 	{
+// 		if (counter == f_atoi(av[1]))
+// 			break ;
+// 		pthread_mutex_lock(&mutex->last_meal);
+// 		if (get_time()
+// 			- philos[i].last_meal >= philos[i].time_to_die)
+// 		{
+// 			pthread_mutex_unlock(&mutex->last_meal);
+// 			pthread_mutex_lock(&mutex->start);
+// 			printf("%ld %d died \n", (get_time() - philos[i].start),
+// 			(philos[i].philo_id) + 1);
+// 			// printf("gettime = %ld\n", get_time() - philos[i].start);
+// 			pthread_mutex_unlock(&mutex->start);
+// 			pthread_mutex_lock(&mutex->death);
+// 			mutex->dead = 1;
+// 			pthread_mutex_unlock(&mutex->death);
+// 			break ;
+// 		}
+// 		pthread_mutex_unlock(&mutex->last_meal);
+// 		pthread_mutex_lock(&mutex->eat);
+// 		if (philos[i].eat == philos[i].times_to_eat)
+// 			(counter)++;
+// 		else
+// 			counter = 0;
+// 		pthread_mutex_unlock(&mutex->eat);
+// 		i++;
+// 		if ((i) == f_atoi(av[1]) && f_atoi(av[1]) > 1)
+// 			(i) = 0;
+// 		// printf ("i === %d\n", i);
+// 		if (f_atoi(av[1]) == 1)
+// 			(i) = 0;
+// 	}
+// }
 
 int	main(int ac, char **av)
 {

@@ -6,7 +6,7 @@
 /*   By: mzoheir <mzoheir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/09 22:48:40 by mzoheir           #+#    #+#             */
-/*   Updated: 2023/05/09 14:59:37 by mzoheir          ###   ########.fr       */
+/*   Updated: 2023/05/28 17:00:54 by mzoheir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,14 @@ void	mutex_init(t_mutex *mutex, char **av)
 	j = f_atoi(av[1]);
 	mutex->mut = malloc(sizeof(t_philo) * j);
 	if (j == 1)
-		pthread_mutex_init(&mutex->mut[j], NULL);
+		pthread_mutex_init(&mutex->mut[j - 1], NULL);
 	else
 	{
-		while (++i < j)
+		while (i < j)
+		{
 			pthread_mutex_init(&mutex->mut[i], NULL);
+			i++;
+		}
 	}
 	pthread_mutex_init(&mutex->death, NULL);
 	pthread_mutex_init(&mutex->last_meal, NULL);
@@ -76,7 +79,7 @@ void	bis_main(t_norm *norm, t_philo *philos, t_mutex *mutex)
 {
 	pthread_mutex_lock(&mutex->start);
 	printf("%ld %d died \n", (get_time() - philos[norm->i].start),
-		philos[norm->i].philo_id);
+		(philos[norm->i].philo_id) + 1);
 	pthread_mutex_unlock(&mutex->start);
 	pthread_mutex_lock(&mutex->death);
 	mutex->dead = 1;

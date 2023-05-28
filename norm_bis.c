@@ -6,7 +6,7 @@
 /*   By: mzoheir <mzoheir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 16:52:34 by mzoheir           #+#    #+#             */
-/*   Updated: 2023/05/09 19:03:59 by mzoheir          ###   ########.fr       */
+/*   Updated: 2023/05/28 16:57:41 by mzoheir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,15 +30,15 @@ void	bis_death_check_2(t_philo *philos, t_mutex *mutex, char **av,
 	pthread_mutex_lock(&mutex->eat);
 	bis_death_check(philos, norm);
 	pthread_mutex_unlock(&mutex->eat);
-	if ((norm->i) == f_atoi(av[1]) && f_atoi(av[1]) > 1)
-		(norm->i) = 1;
 	(norm->i)++;
+	if ((norm->i) == f_atoi(av[1]) && f_atoi(av[1]) > 1)
+		(norm->i) = 0;
 	if (f_atoi(av[1]) == 1)
-		(norm->i) = 1;
+		(norm->i) = 0;
 }
 
 void	norm_bs(t_norm *norm)
 {
-	norm->i = 1;
+	norm->i = 0;
 	norm->counter = 0;
 }
