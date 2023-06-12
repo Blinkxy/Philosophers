@@ -6,7 +6,7 @@
 /*   By: mzoheir <mzoheir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/02 23:17:41 by mzoheir           #+#    #+#             */
-/*   Updated: 2023/05/28 17:02:19 by mzoheir          ###   ########.fr       */
+/*   Updated: 2023/06/12 16:13:21 by mzoheir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,30 +54,49 @@ unsigned long	get_time(void)
 	return ((tv.tv_sec) * 1000 + (tv.tv_usec) / 1000);
 }
 
-void	ft_usleep(unsigned long time)
+int	ft_usleep(t_philo *philos, unsigned long time)
 {
 	unsigned long	j;
 
 	j = get_time();
 	while (1)
 	{
-		if (get_time() - j >= time)
-			return ;
+		pthread_mutex_lock(&philos->lock->death);
+		if (philos->lock->dead != 1)
+		{
+			pthread_mutex_unlock(&philos->lock->death);
+			if (get_time() - j >= time)
+				return (0);
+		}
+		else
+		{
+			pthread_mutex_unlock(&philos->lock->death);
+			return (1);
+		}
 		usleep(50);
 	}
 }
 
-void	subroutine(t_philo *philos, t_mutex *mutex)
+int	subroutine(t_philo *philos, t_mutex *mutex)
 {
-	print(philos, "is thinking", mutex);
+	if (print(philos, "is thinking", mutex) == 1)
+		return (1);
 	pthread_mutex_lock(&philos->lock->mut[philos->philo_id]);
+	if (print(philos, "has taken a fork", mutex) == 1)
+		return (1);
 	pthread_mutex_lock(&philos->lock->mut[(philos->philo_id + 1)
 		% (philos->nb_philos)]);
-	print(philos, "has taken a fork", mutex);
-	print(philos, "has taken a fork", mutex);
-	print(philos, "is eating", mutex);
+	if (print(philos, "has taken a fork", mutex) == 1)
+		return (1);
+	if (print(philos, "is eating", mutex) == 1)
+		return (1);
 	pthread_mutex_lock(&philos->lock->last_meal);
 	philos->last_meal = get_time();
 	pthread_mutex_unlock(&philos->lock->last_meal);
-	ft_usleep(philos->time_to_eat);
+	if (ft_usleep(philos, philos->time_to_eat) == 1)
+		return (1);
+	pthread_mutex_unlock(&philos->lock->mut[(philos->philo_id + 1)
+		% (philos->nb_philos)]);
+	pthread_mutex_unlock(&philos->lock->mut[philos->philo_id]);
+	return (0);
 }

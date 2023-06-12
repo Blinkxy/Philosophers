@@ -6,7 +6,7 @@
 /*   By: mzoheir <mzoheir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/18 23:25:49 by mzoheir           #+#    #+#             */
-/*   Updated: 2023/05/09 19:09:03 by mzoheir          ###   ########.fr       */
+/*   Updated: 2023/06/09 19:48:48 by mzoheir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ typedef struct norm
 }					t_norm;
 
 unsigned long		get_time(void);
-void				ft_usleep(unsigned long time);
+int					ft_usleep(t_philo *philos, unsigned long time);
 int					f_atoi(char *str);
 void				make_threads(t_philo *philos, t_mutex *mutex, pthread_t *th,
 						char **av);
@@ -61,8 +61,8 @@ void				bis_death_check_2(t_philo *philos, t_mutex *mutex,
 						char **av, t_norm *norm);
 int					error_args(char **av);
 int					error_args_bis(char **av);
-void				subroutine(t_philo *philos, t_mutex *mutex);
-void				print(t_philo *philos, char *s, t_mutex *mutex);
+int					subroutine(t_philo *philos, t_mutex *mutex);
+int					print(t_philo *philos, char *s, t_mutex *mutex);
 void				mutex_init(t_mutex *mutex, char **av);
 int					f_strlen_double(char **str);
 void				bis_main(t_norm *norm, t_philo *philos, t_mutex *mutex);
