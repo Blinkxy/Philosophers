@@ -6,7 +6,7 @@
 /*   By: mzoheir <mzoheir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/02 23:17:41 by mzoheir           #+#    #+#             */
-/*   Updated: 2023/06/12 16:13:21 by mzoheir          ###   ########.fr       */
+/*   Updated: 2023/09/07 12:47:30 by mzoheir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ int	error_args_bis(char **av)
 
 	j = 0;
 	i = f_strlen_double(av);
+	if (f_atoi(av[1]) > 200)
+		return (1);
 	while (++j < i)
 	{
 		if (!(f_atoi(av[j]) >= 0))
@@ -70,6 +72,9 @@ int	ft_usleep(t_philo *philos, unsigned long time)
 		}
 		else
 		{
+			pthread_mutex_unlock(&philos->lock->mut[(philos->philo_id + 1)
+				% (philos->nb_philos)]);
+			pthread_mutex_unlock(&philos->lock->mut[philos->philo_id]);
 			pthread_mutex_unlock(&philos->lock->death);
 			return (1);
 		}
@@ -84,6 +89,11 @@ int	subroutine(t_philo *philos, t_mutex *mutex)
 	pthread_mutex_lock(&philos->lock->mut[philos->philo_id]);
 	if (print(philos, "has taken a fork", mutex) == 1)
 		return (1);
+	if (philos->nb_philos == 1)
+	{
+		ft_usleep(philos, philos->time_to_die);
+		return (1);
+	}
 	pthread_mutex_lock(&philos->lock->mut[(philos->philo_id + 1)
 		% (philos->nb_philos)]);
 	if (print(philos, "has taken a fork", mutex) == 1)

@@ -6,7 +6,7 @@
 /*   By: mzoheir <mzoheir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/02 23:17:02 by mzoheir           #+#    #+#             */
-/*   Updated: 2023/06/12 16:12:56 by mzoheir          ###   ########.fr       */
+/*   Updated: 2023/09/07 12:40:41 by mzoheir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,6 @@ void	make_threads(t_philo *philos, t_mutex *mutex, pthread_t *th, char **av)
 	int				i;
 
 	start_sim = get_time();
-	mutex->dead = 0;
 	i = -1;
 	while (++i < f_atoi(av[1]))
 	{
@@ -117,31 +116,32 @@ void	death_check(t_philo *philos, t_mutex *mutex, char **av)
 
 int	main(int ac, char **av)
 {
-	int			tab[3];
-	pthread_t	th[201];
-	t_philo		philos[201];
+	pthread_t	*th;
+	t_philo		*philos;
 	t_mutex		mutex;
 
 	if (ac == 5 || ac == 6)
 	{
 		if (error_args(av) == 1 || error_args_bis(av) == 1)
 			return (1);
+		philos = malloc(sizeof(t_philo) * f_atoi(av[1]));
+		if (!philos)
+			return (1);
+		th = malloc(sizeof(pthread_t) * f_atoi(av[1]));
+		if (!th)
+		{
+			if (philos)
+				free(philos);
+			return (1);
+		}
 		mutex_init(&mutex, av);
 		make_threads(philos, &mutex, th, av);
 		death_check(philos, &mutex, av);
-		tab[0] = 0;
-		tab[1] = f_atoi(av[1]);
-		if (tab[1] == 1)
-		{
-			pthread_mutex_destroy(&mutex.mut[tab[0]]);
-			return (0);
-		}
-		else
-			norm_main(tab, &mutex, th);
+		norm_main(f_atoi(av[1]), &mutex, th, philos);
 	}
 	return (0);
 }
-
+// 0x100810700
 // Tab[0] ==> i
 // Tab[1] ==> nb philos
 // Tab[2] ==> Counter of finished eaten philos (Last parameter)

@@ -6,7 +6,7 @@
 /*   By: mzoheir <mzoheir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/09 22:48:40 by mzoheir           #+#    #+#             */
-/*   Updated: 2023/06/09 17:01:48 by mzoheir          ###   ########.fr       */
+/*   Updated: 2023/09/06 16:40:48 by mzoheir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@ void	mutex_init(t_mutex *mutex, char **av)
 
 	i = 0;
 	j = f_atoi(av[1]);
-	mutex->mut = malloc(sizeof(t_philo) * j);
-	if (j == 1)
-		pthread_mutex_init(&mutex->mut[j - 1], NULL);
-	else
+	mutex->dead = 0;
+	mutex->mut = malloc(sizeof(pthread_mutex_t) * j);
+	if (!mutex->mut)
+		return ;
 	{
 		while (i < j)
 		{
