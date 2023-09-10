@@ -3,13 +3,13 @@ NAME = philo
 CFLAGS = -pthread -Wall -Wextra -Werror
 RM = rm -rf
 CC = cc
-SRC = philo.c philo_utils.c philo_norm.c norm_bis.c
+SRC = philo.c philo_utils.c philo_norm.c norm_bis.c philo_bis.c
 OBJ = $(SRC:.c=.o)
 
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	@$(CC) $(OBJ) -o $(NAME)
+	@$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 	@echo ---program linked---
 
 %.o: %.c

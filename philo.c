@@ -6,7 +6,7 @@
 /*   By: mzoheir <mzoheir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/02 23:17:02 by mzoheir           #+#    #+#             */
-/*   Updated: 2023/09/07 12:40:41 by mzoheir          ###   ########.fr       */
+/*   Updated: 2023/09/10 13:11:37 by mzoheir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,18 @@
 
 int	print(t_philo *philos, char *s, t_mutex *mutex)
 {
+	pthread_mutex_lock(&philos->lock->print_lock);
 	pthread_mutex_lock(&mutex->death);
-	if (philos->lock->dead != 1)
+	if (check_died(philos->lock->dead) != 1)
 	{
 		pthread_mutex_unlock(&mutex->death);
-		pthread_mutex_lock(&mutex->print_lock);
 		printf("%ld  %d %s\n", get_time() - philos->start, philos->philo_id + 1,
 			s);
 		pthread_mutex_unlock(&mutex->print_lock);
 	}
 	else
 	{
+		pthread_mutex_unlock(&mutex->print_lock);
 		pthread_mutex_unlock(&mutex->death);
 		return (1);
 	}
@@ -39,7 +40,7 @@ void	*routine(void *arg)
 	while (1)
 	{
 		pthread_mutex_lock(&philos->lock->death);
-		if (philos->lock->dead == 1)
+		if (check_died(philos->lock->dead))
 		{
 			pthread_mutex_unlock(&philos->lock->death);
 			break ;
@@ -83,7 +84,7 @@ void	make_threads(t_philo *philos, t_mutex *mutex, pthread_t *th, char **av)
 		philos[i].lock = mutex;
 		philos[i].last_meal = start_sim;
 		pthread_create(&th[i], NULL, &routine, &philos[i]);
-		usleep(50);
+		usleep(60);
 	}
 }
 
@@ -99,14 +100,16 @@ void	death_check(t_philo *philos, t_mutex *mutex, char **av)
 		pthread_mutex_lock(&mutex->last_meal);
 		if (get_time() - philos[norm.i].last_meal >= philos[norm.i].time_to_die)
 		{
+			pthread_mutex_lock(&mutex->print_lock);
 			pthread_mutex_unlock(&mutex->last_meal);
 			pthread_mutex_lock(&mutex->death);
 			mutex->dead = 1;
 			pthread_mutex_unlock(&mutex->death);
 			pthread_mutex_lock(&mutex->start);
-			printf("%ld %d died\n", (get_time() - philos[norm.i].start),
+			printf("%ld  %d  died\n", (get_time() - philos[norm.i].start),
 				(philos[norm.i].philo_id) + 1);
 			pthread_mutex_unlock(&mutex->start);
+			pthread_mutex_unlock(&mutex->print_lock);
 			break ;
 		}
 		pthread_mutex_unlock(&mutex->last_meal);

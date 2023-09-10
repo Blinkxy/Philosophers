@@ -6,7 +6,7 @@
 /*   By: mzoheir <mzoheir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/02 23:17:41 by mzoheir           #+#    #+#             */
-/*   Updated: 2023/09/07 12:47:30 by mzoheir          ###   ########.fr       */
+/*   Updated: 2023/09/10 13:09:05 by mzoheir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ int	ft_usleep(t_philo *philos, unsigned long time)
 	while (1)
 	{
 		pthread_mutex_lock(&philos->lock->death);
-		if (philos->lock->dead != 1)
+		if (check_died(philos->lock->dead) != 1)
 		{
 			pthread_mutex_unlock(&philos->lock->death);
 			if (get_time() - j >= time)
