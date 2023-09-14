@@ -9,19 +9,16 @@ OBJ = $(SRC:.c=.o)
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	@$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
-	@echo ---program linked---
+	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
 %.o: %.c
-	@$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:	
-	@$(RM) $(OBJ)
-	@echo ---objects cleaned---
+	$(RM) $(OBJ)
 
 fclean: clean
-	@$(RM) $(NAME)
-	@echo ---program cleaned---
+	$(RM) $(NAME)
 
 re: fclean all
 

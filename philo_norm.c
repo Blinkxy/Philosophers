@@ -6,7 +6,7 @@
 /*   By: mzoheir <mzoheir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/09 22:48:40 by mzoheir           #+#    #+#             */
-/*   Updated: 2023/09/06 16:40:48 by mzoheir          ###   ########.fr       */
+/*   Updated: 2023/09/14 16:14:08 by mzoheir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ void	mutex_init(t_mutex *mutex, char **av)
 	i = 0;
 	j = f_atoi(av[1]);
 	mutex->dead = 0;
+	mutex->finished = 0;
 	mutex->mut = malloc(sizeof(pthread_mutex_t) * j);
 	if (!mutex->mut)
 		return ;
@@ -35,6 +36,7 @@ void	mutex_init(t_mutex *mutex, char **av)
 	pthread_mutex_init(&mutex->eat, NULL);
 	pthread_mutex_init(&mutex->start, NULL);
 	pthread_mutex_init(&mutex->print_lock, NULL);
+	pthread_mutex_init(&mutex->finish, NULL);
 }
 
 int	f_strlen_double(char **str)
@@ -49,27 +51,25 @@ int	f_strlen_double(char **str)
 
 int	f_atoi(char *str)
 {
-	unsigned char	*s;
 	int				i;
 	int				res;
 	int				sign;
 
-	s = (unsigned char *)str;
 	res = 0;
 	i = 0;
 	sign = 1;
-	while ((s[i] >= 9 && s[i] <= 13) || s[i] == 32)
+	while ((str[i] >= 9 && str[i] <= 13) || str[i] == 32)
 		i++;
-	if (s[i] == '-')
+	if (str[i] == '-')
 	{
 		sign *= -1;
 		i++;
 	}
-	else if (s[i] == '+')
+	else if (str[i] == '+')
 		i++;
-	while (s[i] >= 48 && s[i] <= 57)
+	while (str[i] >= 48 && str[i] <= 57)
 	{
-		res = res * 10 + (s[i] - 48);
+		res = res * 10 + (str[i] - 48);
 		i++;
 	}
 	return (res * sign);
@@ -81,12 +81,4 @@ void	bis_main(t_norm *norm, t_philo *philos, t_mutex *mutex)
 	printf("%ld %d died \n", (get_time() - philos[norm->i].start),
 		(philos[norm->i].philo_id) + 1);
 	pthread_mutex_unlock(&mutex->start);
-}
-
-void	bis_death_check(t_philo *philos, t_norm *norm)
-{
-	if (philos[norm->i].eat == philos[norm->i].times_to_eat)
-		(norm->counter)++;
-	else
-		norm->counter = 0;
 }

@@ -6,7 +6,7 @@
 /*   By: mzoheir <mzoheir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/02 23:17:41 by mzoheir           #+#    #+#             */
-/*   Updated: 2023/09/10 13:09:05 by mzoheir          ###   ########.fr       */
+/*   Updated: 2023/09/14 16:31:38 by mzoheir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ int	error_args(char **av)
 {
 	int	i;
 	int	j;
+	int	k;
 
 	i = 1;
 	while (av[i])
@@ -25,6 +26,13 @@ int	error_args(char **av)
 	{
 		if (f_atoi(av[j]) <= 0)
 			return (1);
+		k = 0;
+		while (av[j][k])
+		{
+			if (!(av[j][k] >= '0' && av[j][k] <= '9'))
+				return (1);
+			k++;
+		}
 		j++;
 	}
 	return (0);
@@ -86,23 +94,23 @@ int	subroutine(t_philo *philos, t_mutex *mutex)
 {
 	if (print(philos, "is thinking", mutex) == 1)
 		return (1);
+	pthread_mutex_lock(&philos->lock->eat);
+	if (philos->eat >= philos->times_to_eat && philos->times_to_eat > -1)
+	{
+		pthread_mutex_unlock(&philos->lock->eat);
+		return (1);
+	}
+	pthread_mutex_unlock(&philos->lock->eat);
 	pthread_mutex_lock(&philos->lock->mut[philos->philo_id]);
 	if (print(philos, "has taken a fork", mutex) == 1)
 		return (1);
-	if (philos->nb_philos == 1)
-	{
-		ft_usleep(philos, philos->time_to_die);
-		return (1);
-	}
 	pthread_mutex_lock(&philos->lock->mut[(philos->philo_id + 1)
 		% (philos->nb_philos)]);
 	if (print(philos, "has taken a fork", mutex) == 1)
 		return (1);
 	if (print(philos, "is eating", mutex) == 1)
 		return (1);
-	pthread_mutex_lock(&philos->lock->last_meal);
-	philos->last_meal = get_time();
-	pthread_mutex_unlock(&philos->lock->last_meal);
+	bis_routine(philos);
 	if (ft_usleep(philos, philos->time_to_eat) == 1)
 		return (1);
 	pthread_mutex_unlock(&philos->lock->mut[(philos->philo_id + 1)
